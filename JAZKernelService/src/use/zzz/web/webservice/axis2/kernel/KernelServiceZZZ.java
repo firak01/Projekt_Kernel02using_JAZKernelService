@@ -11,6 +11,7 @@ import javax.naming.NamingException;
 
 import basic.zBasic.ExceptionZZZ;
 import basic.zBasic.util.datatype.string.StringZZZ;
+import basic.zBasic.util.server.tomcat.ServerContextUtilZZZ;
 import basic.zKernel.IKernelZZZ;
 import basic.zKernel.KernelSingletonZZZ;
 import basic.zKernel.KernelZZZ;
@@ -44,6 +45,23 @@ public class KernelServiceZZZ {
 		return sReturn;
 	}
 	
+	
+	public String proofJndiResourceConfiguredAvailable(){
+		String sReturn = null;
+		main:{
+		try {
+			IKernelZZZ objKernel = KernelSingletonZZZ.getInstance();
+			String sJndi = objKernel.getParameter("DatabaseRemoteNameJNDI");
+			
+			sReturn = this.proofJndiResourceAvailable(sJndi);
+		} catch (ExceptionZZZ e) {
+			System.out.println(e.getDetailAllLast());
+			e.printStackTrace();
+		}
+	}//end main:
+	return sReturn;
+	}
+	
 	/**Merke: Das ist der flexiblere Einsatz der MEthode.
 	 *        In den WebServices kann durchaus eine Methode existieren, in der der Überagebestring fest ist,
 	 *        da von einer festen Datasource (deshalb ...used...) ausgegangen wird.
@@ -54,12 +72,36 @@ public class KernelServiceZZZ {
 	public String proofJndiResourceAvailable(String sJndiContext){
 		String sReturn=null;
 		boolean bReturn=false;
-		
-		//TODO GOON 20181018:
+	
 		main:{
-			try {
-				IKernelZZZ objKernel = KernelSingletonZZZ.getInstance();
-				String sValue = objKernel.getParameter("DatabaseRemoteNameJNDI");
+//			try {
+				//IKernelZZZ objKernel = KernelSingletonZZZ.getInstance();
+				//String sJndi = objKernel.getParameter("DatabaseRemoteNameJNDI");
+				
+				//Aber an dieser Stelle will ich überhaupt keine Hibenate - Verbindung haben..., wie ?
+				//HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sContextJndi);					
+				//objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
+				
+				//Also ist die einzige Lösung es so zu probieren:
+				InitialContext ctx;
+				try {
+					ctx = new InitialContext();
+					String sJndicontextPath = ServerContextUtilZZZ.computeContextJndiLookupPath(sJndiContext);
+					Object ref = ctx.lookup(sJndicontextPath);
+					if(ref!=null){
+						bReturn = true;
+					}
+				} catch (NamingException e) {
+					//Merke: Wenn dieser Fehler geworfen wird, dann ist die Ressource nicht vorhanden, 
+					//       also nur den Fehler abfangen.
+					bReturn = false;
+					
+					//e.printStackTrace();
+					//ExceptionZZZ ez = new ExceptionZZZ(e.getMessage());
+					//throw ez;
+				}
+				
+				
 				
 				//Missbrauch dieser Methode:
 				//Tryout eine SessionFactory per JNDI zu erzeugen
@@ -73,12 +115,14 @@ public class KernelServiceZZZ {
 				}else{
 					sReturn = "nicht vorhanden";
 				}
-			} catch (ExceptionZZZ e) {
-				System.out.println(e.getDetailAllLast());
-				e.printStackTrace();
-			}
+//			} catch (ExceptionZZZ e) {
+//				System.out.println(e.getDetailAllLast());
+//				e.printStackTrace();
+//			}
 		}//end main:
 	
 		return sReturn;
 	}
+	
+	
 }
