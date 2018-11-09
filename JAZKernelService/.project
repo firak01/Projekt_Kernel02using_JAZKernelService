@@ -6,6 +6,7 @@
 		<project>JAZKernel</project>
 		<project>JAZKernelLogReport</project>
 		<project>JAZDummy</project>
+		<project>JAZTileHexMap03</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

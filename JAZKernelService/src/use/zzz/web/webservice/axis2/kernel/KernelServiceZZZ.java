@@ -10,6 +10,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import basic.zBasic.ExceptionZZZ;
+import basic.zBasic.ReflectCodeZZZ;
 import basic.zBasic.util.datatype.string.StringZZZ;
 import basic.zBasic.util.server.tomcat.ServerContextUtilZZZ;
 import basic.zKernel.IKernelZZZ;
@@ -74,7 +75,8 @@ public class KernelServiceZZZ {
 		boolean bReturn=false;
 	
 		main:{
-//			try {
+			//try {
+				System.out.println(ReflectCodeZZZ.getMethodCurrentNameLined()+": Jndi Pfad = '"+sJndiContext+"'" );
 				//IKernelZZZ objKernel = KernelSingletonZZZ.getInstance();
 				//String sJndi = objKernel.getParameter("DatabaseRemoteNameJNDI");
 				
