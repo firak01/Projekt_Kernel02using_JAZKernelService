@@ -13,6 +13,7 @@ import basic.zBasic.ExceptionZZZ;
 import basic.zBasic.ReflectCodeZZZ;
 import basic.zBasic.util.datatype.string.StringZZZ;
 import basic.zBasic.util.server.tomcat.ServerContextUtilZZZ;
+import basic.zKernel.IKernelConfigSectionEntryZZZ;
 import basic.zKernel.IKernelZZZ;
 import basic.zKernel.KernelSingletonZZZ;
 import basic.zKernel.KernelZZZ;
@@ -35,12 +36,19 @@ public class KernelServiceZZZ {
 		main:{
 			if(StringZZZ.isEmpty(sParameterInIni)) break main;
 			try {
-				IKernelZZZ objKernel = KernelSingletonZZZ.getInstance();
-				sReturn = objKernel.getParameter(sParameterInIni);				
+				IKernelZZZ objKernel = KernelSingletonZZZ.getInstance();				
+				IKernelConfigSectionEntryZZZ objEntry = objKernel.getParameter(sParameterInIni);
+				if(!objEntry.hasAnyValue()){
+					String serror = "Parameter existiert nicht in der Konfiguration: '" + sParameterInIni + "'";
+					System.out.println(ReflectCodeZZZ.getMethodCurrentName() + ": " +serror);
+					ExceptionZZZ ez = new ExceptionZZZ(serror,ExceptionZZZ.iERROR_CONFIGURATION_VALUE, this,  ReflectCodeZZZ.getMethodCurrentName());
+					throw ez;
+				}else{
+					sReturn = objEntry.getValue();
+				}								
 			} catch (ExceptionZZZ e) {
 				System.out.println(e.getDetailAllLast());
-				e.printStackTrace();
-				
+				e.printStackTrace();				
 			}
 		}//end main:
 		return sReturn;
@@ -52,7 +60,16 @@ public class KernelServiceZZZ {
 		main:{
 		try {
 			IKernelZZZ objKernel = KernelSingletonZZZ.getInstance();
-			String sJndi = objKernel.getParameter("DatabaseRemoteNameJNDI");
+			String sJndi = null;
+			IKernelConfigSectionEntryZZZ objEntry = objKernel.getParameter("DatabaseRemoteNameJNDI");
+			if(!objEntry.hasAnyValue()){
+				String serror = "Parameter existiert nicht in der Konfiguration: 'DatabaseRemoteNameJNDI'";
+				System.out.println(ReflectCodeZZZ.getMethodCurrentName() + ": " +serror);
+				ExceptionZZZ ez = new ExceptionZZZ(serror,ExceptionZZZ.iERROR_CONFIGURATION_VALUE, this,  ReflectCodeZZZ.getMethodCurrentName());
+				throw ez;
+			}else{
+				sJndi = objEntry.getValue();
+			}
 			
 			sReturn = this.proofJndiResourceAvailable(sJndi);
 		} catch (ExceptionZZZ e) {
