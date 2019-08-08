@@ -92,7 +92,7 @@ public class KernelServiceZZZ {
 		boolean bReturn=false;
 	
 		main:{
-			//try {
+			try {
 				System.out.println(ReflectCodeZZZ.getMethodCurrentNameLined()+": Jndi Pfad = '"+sJndiContext+"'" );
 				//IKernelZZZ objKernel = KernelSingletonZZZ.getInstance();
 				//String sJndi = objKernel.getParameter("DatabaseRemoteNameJNDI");
@@ -134,10 +134,10 @@ public class KernelServiceZZZ {
 				}else{
 					sReturn = "nicht vorhanden";
 				}
-//			} catch (ExceptionZZZ e) {
-//				System.out.println(e.getDetailAllLast());
-//				e.printStackTrace();
-//			}
+			} catch (ExceptionZZZ e) {
+				System.out.println(e.getDetailAllLast());
+				e.printStackTrace();
+			}
 		}//end main:
 	
 		return sReturn;
